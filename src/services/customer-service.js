@@ -85,6 +85,26 @@ class CustomerService {
             throw new APIError('Data Not found', err)
         }
     }
+
+    async addToWishlist(customerId, product) {
+        try {
+            const wishlistResult = await this.repository.addWishlistItem(customerId, product);
+            return formatData(wishlistResult);
+
+        } catch (err) {
+            throw new APIError('Data Not found', err)
+        }
+    }
+
+    async getWishList(customerId) {
+
+        try {
+            const wishListItems = await this.repository.wishlist(customerId);
+            return formatData(wishListItems);
+        } catch (err) {
+            throw new APIError('Data Not found', err)
+        }
+    }
 }
 
 export { CustomerService }

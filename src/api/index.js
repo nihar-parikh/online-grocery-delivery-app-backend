@@ -1,3 +1,5 @@
 import { customer } from "./customer.js"
+import { products } from "./products.js"
 
-export { customer }
+
+export { customer, products }

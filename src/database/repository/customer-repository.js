@@ -70,6 +70,52 @@ class CustomerRepository {
         }
     }
 
+    async addWishlistItem(customerId, product) {
+        try {
+            const profile = await customerModel.findById(customerId);
+            if (profile) {
+
+                let wishlist = profile.wishlist;
+                if (wishlist.length > 0) {
+                    let isExist = false;
+                    wishlist.map(item => {
+                        //--if item already exist in wishlist then remove it when this endpoint hits for second time->toggle--//
+                        if (item.toString() === product.data._id.toString()) {
+                            const index = wishlist.indexOf(item);
+                            wishlist.splice(index, 1);
+                            isExist = true;
+                        }
+                    });
+
+                    if (isExist === false) {
+                        wishlist.push(product.data);
+                    }
+
+                }
+                else {
+                    wishlist.push(product.data);
+                }
+                profile.wishlist = wishlist;
+            }
+
+            const profileResult = await profile.save();
+
+            return profileResult.wishlist;
+
+        } catch (err) {
+            throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Add to WishList')
+        }
+
+    }
+
+    async wishlist(customerId) {
+        try {
+            const profile = await customerModel.findById(customerId)
+            return profile.wishlist;
+        } catch (err) {
+            throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Get Wishlist ')
+        }
+    }
 }
 
 export { CustomerRepository };
