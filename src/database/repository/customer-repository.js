@@ -98,8 +98,8 @@ class CustomerRepository {
                 profile.wishlist = wishlist;
             }
 
-            const profileResult = await profile.save();
-
+            await profile.save();
+            const profileResult = await customerModel.findById(customerId).populate("wishlist")
             return profileResult.wishlist;
 
         } catch (err) {
@@ -110,7 +110,7 @@ class CustomerRepository {
 
     async wishlist(customerId) {
         try {
-            const profile = await customerModel.findById(customerId)
+            const profile = await customerModel.findById(customerId).populate("wishlist")
             return profile.wishlist;
         } catch (err) {
             throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Get Wishlist ')
