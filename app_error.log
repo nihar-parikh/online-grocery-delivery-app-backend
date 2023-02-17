@@ -14,3 +14,13 @@
 {"level":"error","message":"Fri Dec 30 2022 15:40:54 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":500,\"isOperational\":true}","private":true}
 {"level":"error","message":"Fri Dec 30 2022 17:14:51 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{},\"isOperational\":true}","private":true}
 {"level":"error","message":"Fri Dec 30 2022 17:22:58 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 11:51:31 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 11:53:17 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 11:57:50 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 14:49:08 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 14:50:25 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 15:24:23 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 15:25:09 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 15:25:34 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 15:26:54 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}
+{"level":"error","message":"Fri Feb 17 2023 15:29:37 GMT+0530 (India Standard Time)-{\"name\":\"Data Not found\",\"statusCode\":{\"name\":\"API Error\",\"statusCode\":500,\"isOperational\":true},\"isOperational\":true}","private":true}

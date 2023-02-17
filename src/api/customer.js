@@ -71,13 +71,12 @@ const customer = (app) => {
         const customerId = req.user._id;
         const productId = req.body.productId;
 
-
         try {
             const product = await productService.getProductById(productId);
             const wishList = await customerService.addToWishlist(customerId, product)
             return res.status(200).json(wishList);
         } catch (err) {
-
+            next(err)
         }
     });
 

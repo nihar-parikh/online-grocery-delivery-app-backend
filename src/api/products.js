@@ -1,5 +1,6 @@
 import { ProductService } from '../services/product-service.js';
 import { CustomerService } from '../services/customer-service.js';
+import { userAuth } from './middileware/auth.js';
 // import userAuth from './middlewares/auth';
 
 const products = (app) => {
@@ -62,6 +63,34 @@ const products = (app) => {
 
     });
 
+    app.put('/api/v1/product/cart', userAuth, async (req, res, next) => {
+
+        const { productId, quantity } = req.body;
+
+        try {
+            const { data } = await productService.getProductById(productId);
+
+            const result = await customerService.manageCart({ customerId: req.user._id, product: data, quantity, isRemove: false });
+
+            return res.status(200).json(result);
+
+        } catch (err) {
+            next(err)
+        }
+    });
+
+    app.delete('/api/v1/product/cart/:productId', userAuth, async (req, res, next) => {
+
+        const { productId } = req.params
+        try {
+            const { data } = await productService.getProductById(productId);
+
+            const result = await customerService.manageCart({ customerId: req.user._id, product: data, quantity: 0, isRemove: true });
+            return res.status(200).json(result);
+        } catch (err) {
+            next(err)
+        }
+    });
 
 }
 

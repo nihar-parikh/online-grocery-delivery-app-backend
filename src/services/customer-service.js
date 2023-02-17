@@ -105,6 +105,30 @@ class CustomerService {
             throw new APIError('Data Not found', err)
         }
     }
+
+    async manageCart({ customerId, product, quantity, isRemove }) {
+        try {
+            const cartResult = await this.repository.addCartItem(customerId, product, quantity, isRemove);
+            return formatData(cartResult);
+        } catch (error) {
+            throw new APIError('Data Not found', error)
+        }
+    }
+
+    async getShopingDetails(id) {
+
+        try {
+            const existingCustomer = await this.repository.findCustomerById({ id });
+
+            if (existingCustomer) {
+                return formatData(existingCustomer);
+            }
+            return formatData({ msg: 'Error' });
+
+        } catch (err) {
+            throw new APIError('Data Not found', err)
+        }
+    }
 }
 
 export { CustomerService }

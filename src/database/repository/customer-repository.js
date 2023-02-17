@@ -61,9 +61,9 @@ class CustomerRepository {
         try {
             const existingCustomer = await customerModel.findById(id)
                 .populate('address')
-            // .populate('wishlist')
-            // .populate('orders')
-            // .populate('cart.product');
+                .populate('wishlist')
+                .populate('orders')
+                .populate('cart.product');
             return existingCustomer;
         } catch (err) {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Customer');
@@ -114,6 +114,57 @@ class CustomerRepository {
             return profile.wishlist;
         } catch (err) {
             throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Get Wishlist ')
+        }
+    }
+
+    async addCartItem(customerId, product, quantity, isRemove) {
+        try {
+            const profile = await customerModel.findById(customerId).populate(
+                "cart.product"
+            );
+
+            if (profile) {
+                const cartItem = {
+                    product,
+                    unit: quantity,
+                };
+
+                let cartItems = profile.cart;
+
+                if (cartItems.length > 0) {
+                    let isExist = false;
+                    cartItems.map((item) => {
+                        if (item.product._id.toString() === product._id.toString()) {
+                            if (isRemove) {
+                                cartItems.splice(cartItems.indexOf(item), 1);
+                            } else {
+                                item.unit = quantity;
+                            }
+                            isExist = true;
+                        }
+                    });
+
+                    if (!isExist) {
+                        cartItems.push(cartItem);
+                    }
+                } else {
+                    cartItems.push(cartItem);
+                }
+
+                profile.cart = cartItems;
+
+                const cartSaveResult = await profile.save();
+
+                return cartSaveResult.cart;
+            }
+
+            throw new Error("Unable to add to cart!");
+        } catch (err) {
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Create Customer"
+            );
         }
     }
 }

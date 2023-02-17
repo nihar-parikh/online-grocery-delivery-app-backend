@@ -1,6 +1,6 @@
 import { json, urlencoded } from 'express';
 import cors from 'cors';
-import { customer, products } from './api/index.js';
+import { customer, products, shopping } from './api/index.js';
 import { ErrorHandler } from './utils/error-handler.js';
 
 const expressApp = async (app) => {
@@ -12,6 +12,7 @@ const expressApp = async (app) => {
     //api
     customer(app);
     products(app);
+    shopping(app);
 
     // error handling
     app.use(ErrorHandler);
