@@ -60,10 +60,35 @@ class CustomerRepository {
 
         try {
             const existingCustomer = await customerModel.findById(id)
-                .populate('address')
-                .populate('wishlist')
-                .populate('orders')
-                .populate('cart.product');
+                .populate({
+                    path: 'address',
+                    select: 'country',
+                })
+                .populate([{
+                    path: 'wishlist',
+                    select: 'name',
+                }])
+                .populate([{
+                    path: 'orders',
+                    populate: [{
+                        path: 'items',
+                        populate: [
+                            {
+                                path: 'product',
+                                // select: 'name'
+                            },
+                        ],
+                    },],
+                }])
+                .populate([{
+                    path: 'cart',
+                    populate: [
+                        {
+                            path: 'product',
+                            // select: 'name'
+                        },
+                    ],
+                }]);
             return existingCustomer;
         } catch (err) {
             throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Customer');
@@ -164,6 +189,27 @@ class CustomerRepository {
                 "API Error",
                 STATUS_CODES.INTERNAL_ERROR,
                 "Unable to Create Customer"
+            );
+        }
+    }
+
+    async filterAllCustomers({ tableName, query }) {
+        const checkModelName = (tableName) => {
+            if (tableName === "customers") {
+                return customerModel
+            }
+        }
+        try {
+            return await checkModelName(tableName).aggregate([
+                {
+                    $match: query
+                },
+            ]);
+        } catch (err) {
+            throw APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Get Customers"
             );
         }
     }

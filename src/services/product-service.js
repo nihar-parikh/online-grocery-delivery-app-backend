@@ -48,6 +48,16 @@ class ProductService {
         }
     }
 
+    async getAllProducts({ tableName, query }) {
+        try {
+            const products = await this.repository.filterAllProducts({ tableName, query });
+            return formatData(products)
+        } catch (err) {
+            throw new APIError('Data Not found')
+        }
+    }
+
+
     async getProductsByCategory(category) {
         try {
             const products = await this.repository.findByCategory(category);
