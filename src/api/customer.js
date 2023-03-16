@@ -93,8 +93,8 @@ const customer = (app) => {
 
     app.get('/api/v1/customer/all', userAuth, async (req, res, next) => {
         try {
-            const { tableName, query } = req.body;
-            const { data } = await customerService.getAllCustomers({ tableName, query });
+            const { tableName, joinTableNames, query } = req.body;
+            const { data } = await customerService.getAllCustomers({ tableName, joinTableNames, query });
 
             return res.status(200).json(data);
 

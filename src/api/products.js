@@ -1,7 +1,6 @@
 import { ProductService } from '../services/product-service.js';
 import { CustomerService } from '../services/customer-service.js';
 import { userAuth } from './middileware/auth.js';
-import CryptoJS from "crypto-js";
 
 const products = (app) => {
 
@@ -52,38 +51,9 @@ const products = (app) => {
 
     app.post('/api/v1/product', async (req, res, next) => {
         const { tableName, query } = req.body;
-
-        let key = CryptoJS.enc.Utf8.parse("0823202210301035");
-        let iv = CryptoJS.enc.Utf8.parse("0823202210301035");
-
-        // Methods for encrypt using AES256
-        const encryptData = (object) => {
-            let encrypted = CryptoJS.AES.encrypt(JSON.stringify(object), key, {
-                keySize: 128 / 8,
-                iv: iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7,
-            })
-            return encrypted.toString();
-        }
-
-        // Methods for decrypt using AES256
-        const decryptData = (object) => {
-            let decrypted = CryptoJS.AES.decrypt(object, key, {
-                keySize: 128 / 8,
-                iv: iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7,
-            });
-
-            return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-        }
-
-        // console.log(encryptData(query))
-        console.log(decryptData(query));
         try {
-            const { data } = await productService.getAllProducts({ tableName, query: decryptData(query) });
-            return res.status(200).json(encryptData(data));
+            const { data } = await productService.getAllProducts({ tableName, query });
+            return res.status(200).json(data);
         } catch (err) {
             next(err)
         }

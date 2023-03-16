@@ -130,9 +130,9 @@ class CustomerService {
         }
     }
 
-    async getAllCustomers({ tableName, query }) {
+    async getAllCustomers({ tableName, joinTableNames, query }) {
         try {
-            const customers = await this.repository.filterAllCustomers({ tableName, query });
+            const customers = await this.repository.filterAllCustomers({ tableName, joinTableNames, query });
             return formatData(customers)
         } catch (err) {
             throw new APIError('Data Not found')

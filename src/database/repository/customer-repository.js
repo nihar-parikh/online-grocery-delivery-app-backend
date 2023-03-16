@@ -1,9 +1,14 @@
-import { customerModel, addressModel } from '../models/index.js';
-import { APIError, BadRequestError, STATUS_CODES } from '../../utils/app-errors.js';
+import { customerModel, addressModel, orderModel } from "../models/index.js";
+import {
+    APIError,
+    BadRequestError,
+    STATUS_CODES,
+} from "../../utils/app-errors.js";
+import { checkModelName } from "../../utils/get-model-handler.js";
+import { getAggregationArray, getLookUpMethod } from "../../utils/get-lookup-handler.js";
 
 //Dealing with data base operations
 class CustomerRepository {
-
     async createCustomer({ email, password, phone, salt }) {
         try {
             const customer = new customerModel({
@@ -11,29 +16,31 @@ class CustomerRepository {
                 password,
                 salt,
                 phone,
-                address: []
-            })
+                address: [],
+            });
             const customerResult = await customer.save();
 
             return customerResult;
         } catch (err) {
-            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Create Customer')
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Create Customer"
+            );
         }
     }
 
     async createAddress({ _id, street, postalCode, city, country }) {
-
         try {
             const profile = await customerModel.findById(_id);
 
             if (profile) {
-
                 const newAddress = new addressModel({
                     street,
                     postalCode,
                     city,
-                    country
-                })
+                    country,
+                });
 
                 await newAddress.save();
 
@@ -41,9 +48,12 @@ class CustomerRepository {
             }
 
             return await profile.save();
-
         } catch (err) {
-            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Error on Create Address')
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Error on Create Address"
+            );
         }
     }
 
@@ -52,46 +62,58 @@ class CustomerRepository {
             const existingCustomer = await customerModel.findOne({ email: email });
             return existingCustomer;
         } catch (err) {
-            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Customer')
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Find Customer"
+            );
         }
     }
 
     async findCustomerById({ id }) {
-
         try {
-            const existingCustomer = await customerModel.findById(id)
-                .populate({
-                    path: 'address',
-                    select: 'country',
-                })
-                .populate([{
-                    path: 'wishlist',
-                    select: 'name',
-                }])
-                .populate([{
-                    path: 'orders',
-                    populate: [{
-                        path: 'items',
-                        populate: [
-                            {
-                                path: 'product',
-                                // select: 'name'
-                            },
-                        ],
-                    },],
-                }])
-                .populate([{
-                    path: 'cart',
-                    populate: [
-                        {
-                            path: 'product',
-                            // select: 'name'
-                        },
-                    ],
-                }]);
+            const existingCustomer = await customerModel
+                .findById(id)
+                // .populate([{
+                //     path: 'address',
+                //     // select: 'country',
+                // }])
+                // .populate([{
+                //     path: 'wishlist',
+                //     // select: 'name',
+                // }])
+                // .populate([{
+                //     path: 'orders',
+                //     populate: [{
+                //         path: 'items',
+                //         populate: [
+                //             {
+                //                 path: 'product',
+                //                 // select: 'name'
+                //             },
+                //         ],
+                //     },],
+                // }])
+                // .populate([{
+                //     path: 'cart',
+                //     populate: [
+                //         {
+                //             path: 'product',
+                //             // select: 'name'
+                //         },
+                //     ],
+                // }]);
+                .populate("address")
+                .populate("wishlist")
+                .populate("orders")
+                .populate("cart.product");
             return existingCustomer;
         } catch (err) {
-            throw new APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Customer');
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Find Customer"
+            );
         }
     }
 
@@ -99,11 +121,10 @@ class CustomerRepository {
         try {
             const profile = await customerModel.findById(customerId);
             if (profile) {
-
                 let wishlist = profile.wishlist;
                 if (wishlist.length > 0) {
                     let isExist = false;
-                    wishlist.map(item => {
+                    wishlist.map((item) => {
                         //--if item already exist in wishlist then remove it when this endpoint hits for second time->toggle--//
                         if (item.toString() === product.data._id.toString()) {
                             const index = wishlist.indexOf(item);
@@ -115,38 +136,46 @@ class CustomerRepository {
                     if (isExist === false) {
                         wishlist.push(product.data);
                     }
-
-                }
-                else {
+                } else {
                     wishlist.push(product.data);
                 }
                 profile.wishlist = wishlist;
             }
 
             await profile.save();
-            const profileResult = await customerModel.findById(customerId).populate("wishlist")
+            const profileResult = await customerModel
+                .findById(customerId)
+                .populate("wishlist");
             return profileResult.wishlist;
-
         } catch (err) {
-            throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Add to WishList')
+            throw APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Add to WishList"
+            );
         }
-
     }
 
     async wishlist(customerId) {
         try {
-            const profile = await customerModel.findById(customerId).populate("wishlist")
+            const profile = await customerModel
+                .findById(customerId)
+                .populate("wishlist");
             return profile.wishlist;
         } catch (err) {
-            throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Get Wishlist ')
+            throw APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Get Wishlist "
+            );
         }
     }
 
     async addCartItem(customerId, product, quantity, isRemove) {
         try {
-            const profile = await customerModel.findById(customerId).populate(
-                "cart.product"
-            );
+            const profile = await customerModel
+                .findById(customerId)
+                .populate("cart.product");
 
             if (profile) {
                 const cartItem = {
@@ -193,18 +222,47 @@ class CustomerRepository {
         }
     }
 
-    async filterAllCustomers({ tableName, query }) {
-        const checkModelName = (tableName) => {
-            if (tableName === "customers") {
-                return customerModel
-            }
-        }
+    async filterAllCustomers({ tableName, joinTableNames, query, }) {
+        const aggregationArray = getAggregationArray(query, joinTableNames)
         try {
-            return await checkModelName(tableName).aggregate([
-                {
-                    $match: query
-                },
-            ]);
+            return await checkModelName(tableName).aggregate(
+                // aggregationArray
+                [
+                    {
+                        $match: query,
+                    },
+                    getLookUpMethod({
+                        from: "addresses",
+                        localField: "address",
+                        foreignField: "_id",
+                        as: "address",
+                    }),
+                    getLookUpMethod({
+                        from: "orders",
+                        localField: "orders",
+                        foreignField: "_id",
+                        as: "orders",
+                    }),
+                    getLookUpMethod({
+                        from: "products",
+                        localField: "wishlist",
+                        foreignField: "_id",
+                        as: "wishlist",
+                    }),
+                    {
+                        $project: {
+                            "wishlist._id": 0,
+                            "wishlist.__v": 0,
+                            "createdAt": 0,
+                            "updatedAt": 0,
+                            "__v": 0,
+                            "orders.__v": 0,
+                            "orders.createdAt": 0,
+                            "orders.updatedAt": 0,
+                        }
+                    }
+                ]
+            );
         } catch (err) {
             throw APIError(
                 "API Error",
